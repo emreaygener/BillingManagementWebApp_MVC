@@ -1,0 +1,48 @@
+﻿@model IEnumerable<BillingManagementWebApp.Models.ViewModels.InvoiceViewModel>
+@{
+    ViewData["Title"] = "User Page";
+}
+<div>
+    <h1 class="text-center">User Info</h1>
+    <br />
+    <div>
+        <table id="tbl-users" class="table">
+            <thead>
+                <tr>
+                    <th>@Html.DisplayNameFor(model => model.Id)</th>
+                    <th>@Html.DisplayNameFor(model => model.User)</th>
+                    <th>@Html.DisplayNameFor(model=>model.DateCreated)</th>
+                    <th>@Html.DisplayNameFor(model => model.DateInvoicePaid)</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Id)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.User)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.DateCreated)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.DateInvoicePaid)
+                        </td>
+                        <td>
+                            <div>
+                                <a class="btn btn-outline-warning" asp-action="Edit" asp-route-id="@item.Id"><i class="bi bi-pencil-square"></i>Edit</a> |
+                                <a class="btn btn-outline-info" asp-action="Details" asp-route-id="@item.Id"><i class="bi bi-eye"></i>Details</a> |
+                                <a class="btn btn-outline-danger" asp-action="Delete" asp-route-id="@item.Id"><i class="bi bi-trash"></i>Delete</a>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+

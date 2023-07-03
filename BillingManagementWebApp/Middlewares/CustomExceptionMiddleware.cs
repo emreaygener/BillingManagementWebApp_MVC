@@ -1,9 +1,9 @@
 ﻿using Newtonsoft.Json;
-using ProjectSoccer.Services;
+using BillingManagementWebApp.Services;
 using System.Diagnostics;
 using System.Net;
 
-namespace ProjectSoccer.Middlewares
+namespace BillingManagementWebApp.Middlewares
 {
     public class CustomExceptionMiddleware
     {
@@ -39,7 +39,7 @@ namespace ProjectSoccer.Middlewares
             string message = "[Error] HTTP " + context.Request.Method + " - " + context.Response.StatusCode + ": Error Message - " + ex.Message + " (in " + watch.Elapsed.TotalMilliseconds + " ms.)";
             _loggerService.Write(message);
             var result = JsonConvert.SerializeObject(new { error = ex.Message }, Formatting.None);
-            return context.Response.WriteAsync(message);
+            return context.Response.WriteAsync(result);
         }
     }
     public static class CustomExceptionMiddlewareExtension

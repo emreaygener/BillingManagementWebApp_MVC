@@ -2,10 +2,12 @@
 using BillingManagementWebApp.Models;
 using BillingManagementWebApp.Models.ViewModels;
 using BillingManagementWebApp.Repositories;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BillingManagementWebApp.Controllers
 {
+    [Authorize]
     public class DueController : Controller
     {
         private readonly DueRepository _dueRepository;

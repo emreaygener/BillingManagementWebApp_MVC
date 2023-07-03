@@ -43,6 +43,26 @@
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
                         </li>
                     </ul>
+                    @if (User.Identity.IsAuthenticated)
+                    {
+                        <a id="btn-profile" class="btn btn-success text-md-end" asp-controller="User" asp-action="Details">Profile</a>
+                    }
+                    else
+                    {
+                        <a id="btn-login" class="btn btn-success text-md-end" asp-controller="Login" asp-action="Index">Login</a>
+                    }
+                    <div>
+                        @if (User.Identity.IsAuthenticated)
+                        {
+                            <p>User is authenticated</p>
+                        }
+                        else
+                        {
+                            <p>User is not authenticated</p>
+                        }
+                    </div>
+
+
                 </div>
             </div>
         </nav>
@@ -60,7 +80,15 @@
     </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
+    @{
+        var accessToken = ViewBag.AccessToken;
+    }
+    <script>
+        var accessToken = '@accessToken';
+    </script>
+
 </body>
 </html>

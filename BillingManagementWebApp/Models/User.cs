@@ -17,5 +17,9 @@ namespace BillingManagementWebApp.Models
         public string Password { get; set; } = new Guid().ToString();
         public bool isAdmin { get; set; } = false;
         public bool isOwner { get; set; }
+
+        
+        public string? RefreshToken { get; set; }
+        public DateTime? RefreshTokenExpireDate { get; set; }
     }
 }

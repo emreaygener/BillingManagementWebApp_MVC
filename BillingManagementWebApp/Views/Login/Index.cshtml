@@ -1,0 +1,45 @@
+﻿@model BillingManagementWebApp.Models.ViewModels.LoginViewModel
+@{
+    ViewData["Title"] = "Login";
+}
+<div>
+    <div id="input-div">
+        Username: <input type="text" class="form-control" id="txtUsername" value="11111111111" />
+        <br />
+        Password: <input type="text" class="form-control" id="txtPassword" value="admin123" />
+        <br />
+        <button type="button" id="btnLogin" class="btn btn-outline-success">Login</button>
+    </div>
+</div>
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $("#btnLogin").click(function () {
+                console.log("Button clicked");
+                let login = {
+                    Username: $("#txtUsername").val(),
+                    Password: $("#txtPassword").val()
+                };
+                $.ajax({
+                    type: "POST",
+                    url: "/Login/CreateToken",
+                    data: JSON.stringify(login),
+                    contentType: "application/json",
+                    success: function (response) {
+                        alert("Login successful!");
+                        // store the token and the refresh token in local storage
+                        localStorage.setItem("token", response.token);
+                        localStorage.setItem("refreshToken", response.refreshToken);
+                        // redirect to the home page
+                        window.location.href = "/Home/Index";
+                    },
+                    error: function (xhr, status, error) {
+                        console.log(xhr.responseText);
+                        alert("Invalid username or password!")
+                    }
+                });
+
+            });
+        });
+    </script>
+}

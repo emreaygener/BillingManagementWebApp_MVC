@@ -4,9 +4,11 @@ using BillingManagementWebApp.Models.ViewModels;
 using BillingManagementWebApp.Models;
 using BillingManagementWebApp.Repositories;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 
 namespace BillingManagementWebApp.Controllers
 {
+    [Authorize]
     public class FlatController:Controller
     {
         private readonly FlatRepository _flatRepository;

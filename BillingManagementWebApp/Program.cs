@@ -71,15 +71,17 @@ app.UseRouting();
 
 app.UseSession();
 
-app.Use(async (context, next) =>
-{
-    var token = context.Session.GetString("token");
-    if (!string.IsNullOrEmpty(token))
-    {
-        context.Request.Headers.Add("Authorization", "Bearer "+token);
-    }
-    await next();
-});
+//app.Use(async (context, next) =>
+//{
+//    var token = context.Session.GetString("token");
+//    if (!string.IsNullOrEmpty(token))
+//    {
+//        context.Request.Headers.Add("Authorization", "Bearer "+token);
+//    }
+//    await next();
+//});
+
+app.UseCustomRequestHeaderMiddleware();
 
 app.UseAuthentication();
 app.UseAuthorization();

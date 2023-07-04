@@ -24,45 +24,38 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="User" asp-action="Index">User</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Flat" asp-action="Index">Flat</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Due" asp-action="Index">Due</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Invoice" asp-action="Index">Invoice</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Message" asp-action="Index">Message</a>
-                        </li>
+                        @if (User.Identity.IsAuthenticated)
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="User" asp-action="Index">User</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Flat" asp-action="Index">Flat</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Due" asp-action="Index">Due</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Invoice" asp-action="Index">Invoice</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Message" asp-action="Index">Message</a>
+                            </li>
+                        }
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
                         </li>
                     </ul>
-                    @if (User.Identity.IsAuthenticated)
-                    {
-                        <a id="btn-profile" class="btn btn-success text-md-end" asp-controller="User" asp-action="Details">Profile</a>
-                    }
-                    else
-                    {
-                        <a id="btn-login" class="btn btn-success text-md-end" asp-controller="Login" asp-action="Index">Login</a>
-                    }
                     <div>
                         @if (User.Identity.IsAuthenticated)
                         {
-                            <p>User is authenticated</p>
+                            <a id="btn-logout" class="btn btn-outline-secondary text-md-end" asp-controller="Login" asp-action="logout">Logout</a>
                         }
                         else
                         {
-                            <p>User is not authenticated</p>
+                            <a id="btn-login" class="btn btn-success text-md-end" asp-controller="Login" asp-action="Index">Login</a>
                         }
                     </div>
-
-
                 </div>
             </div>
         </nav>
@@ -83,11 +76,36 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
-    @{
-        var accessToken = ViewBag.AccessToken;
-    }
     <script>
-        var accessToken = '@accessToken';
+        $(document).ajaxError(function (event, xhr, settings) {
+            if (xhr.status === 401) {
+                var responseJSON = xhr.responseJSON;
+                var isTokenExpired = responseJSON && responseJSON.error === 'token_expired';
+
+                if (isTokenExpired) {
+                    refreshToken();
+                }
+            }
+        });
+        function refreshToken() {
+            $.ajax({
+                url: '/refreshToken',
+                method: 'GET',
+                success: function (response) {
+                    retryFailedRequest();
+                },
+                error: function (xhr) {
+                    var responseJSON = xhr.responseJSON;
+                    var errorMessage = responseJSON && responseJSON.error_message;
+                    console.log('Refresh token request failed:', errorMessage);
+                    window.location.href = '/Login';
+                }
+            });
+        }
+        function retryFailedRequest() {
+            var originalRequest = JSON.parse(sessionStorage.getItem('originalRequest'));
+            $.ajax(originalRequest);
+        }
     </script>
 
 </body>

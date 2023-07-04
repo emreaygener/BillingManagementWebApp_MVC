@@ -4,6 +4,7 @@ using BillingManagementWebApp.Models.ViewModels;
 using BillingManagementWebApp.Repositories;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace BillingManagementWebApp.Controllers
 {
@@ -19,9 +20,19 @@ namespace BillingManagementWebApp.Controllers
         }
         public async Task<IActionResult> Index()
         {
-            var users = await _userRepository.GetAll();
-            var userVms = _mapper.Map<List<UserViewModel>>(users);
-            return View(userVms);
+            var role = User.FindFirst(ClaimTypes.Role).Value;
+            if (role == "Admin")
+            {
+                var users = await _userRepository.GetAll();
+                var userVms = _mapper.Map<List<UserViewModel>>(users);
+                return View(userVms);
+            }
+            else
+            {
+                var user = await _userRepository.GetByEmail(User.FindFirst(ClaimTypes.Email).Value);
+                var userVm = _mapper.Map<UserViewModel>(user);
+                return View("Details",userVm);
+            }
         }
         public async Task<IActionResult> Details(int? id)
         {

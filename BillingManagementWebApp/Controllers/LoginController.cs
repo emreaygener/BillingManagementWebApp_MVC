@@ -11,6 +11,7 @@ using System.Security.Claims;
 using BillingManagementWebApp.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using System.Net.Http.Headers;
+using System.IdentityModel.Tokens.Jwt;
 
 namespace BillingManagementWebApp.Controllers
 {
@@ -26,7 +27,6 @@ namespace BillingManagementWebApp.Controllers
 
         public IActionResult Index()
         {
-            var auth = HttpContext.Request.Headers["Authorization"];
             if (User.Identity.IsAuthenticated)
             {
                 return RedirectToAction("Index", "Home");
@@ -43,30 +43,47 @@ namespace BillingManagementWebApp.Controllers
             }
 
             var token = await _userRepository.CreateToken(user);
-            ViewBag.Token = token.AccessToken;
-            ViewBag.RefreshToken = token.RefreshToken;
 
-            Response.Headers.Add("Authorization", token.AccessToken);
             HttpContext.Session.SetString("token", token.AccessToken);
 
-            return Ok(new { token = token.AccessToken, refreshToken = token.RefreshToken });
+            return Ok();
         }
 
         [HttpGet("refreshToken")]
-        public async Task<ActionResult<Token>> RefreshToken([FromHeader] string refreshToken)
+        public async Task<ActionResult<Token>> RefreshToken()
         {
-            var user = await _userRepository.GetByValidRefreshToken(refreshToken);
-            if (user != null)
+            User? user = await GetUserFromSessionedAccessToken();
+
+            if (user is not null && user.RefreshTokenExpireDate > DateTime.Now)
             {
                 var newToken = await _userRepository.CreateToken(user);
-                ViewBag.Token = newToken.AccessToken;
-                ViewBag.RefreshToken = newToken.RefreshToken;
 
-                Response.Headers.Add("Authorization", newToken.AccessToken);
+                HttpContext.Session.SetString("token", newToken.AccessToken);
 
-                return Ok(new { token = newToken.AccessToken, refreshToken = newToken.RefreshToken });
+                return Ok();
             }
+            HttpContext.Session.Clear();
             return Unauthorized();
+        }
+
+        [HttpGet("logout")]
+        public async Task<ActionResult> Logout()
+        {
+            if (User.Identity.IsAuthenticated)
+            {
+                HttpContext.Session.Clear();
+            }
+            return RedirectToAction("Index", "Home");
+        }
+        public async Task<User?> GetUserFromSessionedAccessToken()
+        {
+            var jwtHandler = new JwtSecurityTokenHandler();
+            var user = await _userRepository.GetByEmail(jwtHandler
+                                              .ReadJwtToken(HttpContext.Session.GetString("token"))
+                                                 .Claims
+                                                    .FirstOrDefault(c => c.Type == ClaimTypes.Email)
+                                                        .Value);
+            return user;
         }
     }
 }

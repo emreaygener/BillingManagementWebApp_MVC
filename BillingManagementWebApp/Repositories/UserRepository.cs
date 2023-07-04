@@ -31,9 +31,9 @@ namespace BillingManagementWebApp.Repositories
         {
             return await _context.Users.SingleOrDefaultAsync(x => (x.Email == username || x.PhoneNo == username || x.TCNo == Convert.ToInt64(username)) && x.Password == password);
         }
-        public async Task<User> GetByValidRefreshToken(string refreshToken)
+        public async Task<User> GetByEmail(string email)
         {
-            return await _context.Users.SingleOrDefaultAsync(x => x.RefreshToken == refreshToken && x.RefreshTokenExpireDate > DateTime.Now);
+            return await _context.Users.SingleOrDefaultAsync(x => x.Email == email);
         }
         public async Task Create(User user)
         {

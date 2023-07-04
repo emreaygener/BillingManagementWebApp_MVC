@@ -26,11 +26,6 @@
                     data: JSON.stringify(login),
                     contentType: "application/json",
                     success: function (response) {
-                        alert("Login successful!");
-                        // store the token and the refresh token in local storage
-                        localStorage.setItem("token", response.token);
-                        localStorage.setItem("refreshToken", response.refreshToken);
-                        // redirect to the home page
                         window.location.href = "/Home/Index";
                     },
                     error: function (xhr, status, error) {

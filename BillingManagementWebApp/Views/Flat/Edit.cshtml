@@ -1,0 +1,76 @@
+﻿@model BillingManagementWebApp.Models.ViewModels.FlatViewModel
+@{
+    ViewData["Title"] = "Edit";
+    <style>
+        #fontforeditflat {
+            font-size: 18px;
+        }
+    </style>
+}
+
+<div>
+    <h4>Edit</h4>
+    <hr />
+    <dl id="fontforeditflat" class="row text-xl-start">
+        <dt class="col-sm-2">User Tc No</dt>
+        <dd class="col-sm-10"><input type="text" id="input-flat-username" required value="@Html.DisplayFor(model => model.UserTc)" /></dd>
+        <dt class="col-sm-2">Block Name</dt>
+        <dd class="col-sm-10"><input type="text" id="input-flat-blockname" required value="@Html.DisplayFor(model => model.BlockName)" /></dd>
+        <dt class="col-sm-2">Type</dt>
+        <dd class="col-sm-10"><input type="text" id="input-flat-type" required value="@Html.DisplayFor(model => model.Type)" /></dd>
+        <dt class="col-sm-2">Floor Number</dt>
+        <dd class="col-sm-10"><input type="text" id="input-flat-floorno" required value="@Html.DisplayFor(model => model.FloorNo)" /></dd>
+        <dt class="col-sm-2">Door Number</dt>
+        <dd class="col-sm-10"><input type="text" id="input-flat-doornumber" required value="@Html.DisplayFor(model => model.DoorNumber)" /></dd>
+        <dt class="col-sm-2">isEmpthy:</dt>
+        <dd class="col-sm-10"><input type="checkbox" id="input-flats-isEmpthy" /></dd>
+    </dl>
+
+</div>
+
+<div>
+    <button id="btn-flat-edit" class="btn btn-primary">Save</button>
+    
+    <a class="btn btn-outline-secondary" asp-action="Details" asp-route-id="@Model?.Id">Back to Profile</a>
+</div>
+@{
+    var modelId = @Model.Id; // Render the value of Model.Id into a JavaScript variable
+}
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $("#btn-flat-edit").click(function () {
+                if ($("#input-flat-password").val() !== $("#input-flat-repeated-password").val()) {
+                    alert("Entered passwords don't match!");
+                    window.location.href = "/Flat/Edit/@Model.Id";
+                }
+                let flat = {
+                    Id:"@Model.Id",
+                    User: $("#input-flat-username").val(),
+                    BlockName: $("#input-flat-blockname").val(),
+                    Type: $("#input-flat-type").val(),
+                    FloorNo: $("#input-flat-floorno").val(),
+                    DoorNumber: $("#input-flat-doornumber").val(),
+                    isEmpthy: $("#input-flats-isEmpthy").is(":checked"),
+                    UserTc: $("#input-flat-username").val(),
+                };
+
+                $.ajax({
+                    type: "PUT",
+                    url: "/Flat/Edit/@Model.Id",
+                    data: JSON.stringify(flat),
+                    contentType: "application/json",
+                    
+                    success: function (response) {
+                        window.location.href = "/Flat/Details/@Model.Id";
+                    },
+                    error: function (xhr, status, error) {
+                        console.log(xhr.responseText);
+                        console.log(flat);
+                        alert("OOPS! Something went wrong!");
+                    }
+                });
+            });
+        });
+    </script>
+}

@@ -1,0 +1,93 @@
+﻿@model BillingManagementWebApp.Models.ViewModels.CreateUserViewModel
+@{
+    ViewData["Title"] = "Edit Profile";
+    <style>
+        #fontforedit {
+            font-size: 18px;
+        }
+    </style>
+}
+<div>
+    <h4>Edit</h4>
+    <hr />
+    <dl id="fontforedit" class="row text-xl-start">
+        <dt class="col-sm-2">Name</dt>
+        <dd class="col-sm-10"><input type="text" id="input-user-name" required value="@Html.DisplayFor(model => model.Name)" /></dd>
+        <dt class="col-sm-2">Surname</dt>
+        <dd class="col-sm-10"><input type="text" id="input-user-surname" required value="@Html.DisplayFor(model => model.Surname)" /></dd>
+        <dt class="col-sm-2">Email</dt>
+        <dd class="col-sm-10"><input type="text" id="input-user-email" required value="@Html.DisplayFor(model => model.Email)" /></dd>
+        <dt class="col-sm-2">Phone Number</dt>
+        <dd class="col-sm-10"><input type="text" id="input-user-phoneno" required value="@Html.DisplayFor(model => model.PhoneNo)" /></dd>
+        <dt class="col-sm-2">TC Identity Number</dt>
+        <dd class="col-sm-10"><input type="text" id="input-user-tcno" required value="@Html.DisplayFor(model => model.TCNo)" /></dd>
+        <dt class="col-sm-2">Plate</dt>
+        <dd class="col-sm-10"><input type="text" id="input-user-plate" required value="@Html.DisplayFor(model => model.Plate)" /></dd>
+        @if (User.FindFirst(System.Security.Claims.ClaimTypes.Role).Value == "Admin")
+        {
+        <dt class="col-sm-2">Owner</dt>
+        <dd class="col-sm-10"><input type="checkbox" id="input-user-isowner" @(Model.isOwner ? "checked" : "") /></dd>
+        <dt class="col-sm-2">Admin Authorization</dt>
+        <dd class="col-sm-10"><input type="checkbox" id="input-user-isadmin" @(Model.isAdmin ? "checked" : "") /></dd>
+        }
+        @if (User.FindFirst(System.Security.Claims.ClaimTypes.Email).Value == Model.Email)
+        {
+            <dt class="col-sm-2">Password</dt>
+            <dd class="col-sm-10"><input type="password" id="input-user-password" required value="@Html.DisplayFor(model => model.Password)" /></dd>
+            <dt class="col-sm-2">Repeat Password</dt>
+            <dd class="col-sm-10"><input type="password" id="input-user-repeated-password" required value="@Html.DisplayFor(model => model.Password)" /></dd>
+        }
+    </dl>
+
+</div>
+
+<div>
+    <button id="btn-user-edit" class="btn btn-primary">Save</button>
+    
+    <a class="btn btn-outline-secondary" asp-action="Details" asp-route-id="@Model?.Id">Back to Profile</a>
+</div>
+@{
+    var modelId = @Model.Id; // Render the value of Model.Id into a JavaScript variable
+}
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $("#btn-user-edit").click(function () {
+                if ($("#input-user-password").val() !== $("#input-user-repeated-password").val()) {
+                    alert("Entered passwords don't match!");
+                    window.location.href = "/User/Edit/@Model.Id";
+                }
+                let user = {
+                    Id:"@Model.Id",
+                    Name: $("#input-user-name").val(),
+                    Surname: $("#input-user-surname").val(),
+                    Email: $("#input-user-email").val(),
+                    PhoneNo: $("#input-user-phoneno").val(),
+                    TCNo: $("#input-user-tcno").val(),
+                    Plate: $("#input-user-plate").val(),
+                    isOwner: $("#input-user-isowner").is(":checked"),
+                    isAdmin: $("#input-user-isadmin").is(":checked"),
+                    Password: $("#input-user-password").val()
+                };
+                if (user.Password === null) {
+                    user.Password = "@Model.Password";
+                }
+
+                $.ajax({
+                    type: "PUT",
+                    url: "/User/Edit/@Model.Id",
+                    data: JSON.stringify(user),
+                    contentType: "application/json",
+                    
+                    success: function (response) {
+                        window.location.href = "/User/Details/@Model.Id";
+                    },
+                    error: function (xhr, status, error) {
+                        console.log(xhr.responseText);
+                        alert("OOPS! Something went wrong!");
+                    }
+                });
+            });
+        });
+    </script>
+}

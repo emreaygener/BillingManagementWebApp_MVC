@@ -34,15 +34,81 @@
                         </td>
                         <td>
                             <div>
-                                <a class="btn btn-outline-warning" asp-action="Edit" asp-route-id="@item.Id"><i class="bi bi-pencil-square"></i>Edit</a> |
                                 <a class="btn btn-outline-info" asp-action="Details" asp-route-id="@item.Id"><i class="bi bi-eye"></i>Details</a> |
-                                <a class="btn btn-outline-danger" asp-action="Delete" asp-route-id="@item.Id"><i class="bi bi-trash"></i>Delete</a>
+                                <a class="btn btn-outline-danger" asp-action="Delete" asp-route-id="@item.Id" onclick="deleteItem('@item.Id')">
+                                    <i class="bi bi-trash"></i>Delete
+                                </a>
                             </div>
                         </td>
                     </tr>
                 }
             </tbody>
         </table>
+        <dl class="row text-xl-start">
+            <dt class="col-sm-2">Name:</dt>
+            <dd class="col-sm-10"><input type="text" id="create-input-user-name" required value="Emre" /></dd>
+            <dt class="col-sm-2">Surname:</dt>
+            <dd class="col-sm-10"><input type="text" id="create-input-user-surname" required value="Aygener" /></dd>
+            <dt class="col-sm-2">Email:</dt>
+            <dd class="col-sm-10"><input type="text" id="create-input-user-email" required value="emre.aygener@gmail.com" /></dd>
+            <dt class="col-sm-2">PhoneNo:</dt>
+            <dd class="col-sm-10"><input type="text" id="create-input-user-phoneno" required value="+905364001010" /></dd>
+            <dt class="col-sm-2">TCNo:</dt>
+            <dd class="col-sm-10"><input type="text" id="create-input-user-tcno" required value="12312312312" /></dd>
+            <dt class="col-sm-2">Plate:</dt>
+            <dd class="col-sm-10"><input type="text" id="create-input-user-plate" required value="34au3418" /></dd>
+            <dt class="col-sm-2">isOwner:</dt>
+            <dd class="col-sm-10"><input type="checkbox" id="create-input-user-isowner"/></dd>
+            <dt class="col-sm-2">isAdmin:</dt>
+            <dd class="col-sm-10"><input type="checkbox" id="create-input-user-isadmin"/></dd>
+        </dl>
+        <button id="btn-create-user"class="btn btn-success">Create New User</button>
     </div>
 </div>
-
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $("#btn-create-user").click(function () {
+                let user = {
+                    Name: $("#create-input-user-name").val(),
+                    Surname: $("#create-input-user-surname").val(),
+                    Email: $("#create-input-user-email").val(),
+                    PhoneNo: $("#create-input-user-phoneno").val(),
+                    TCNo: $("#create-input-user-tcno").val(),
+                    Plate: $("#create-input-user-plate").val(),
+                    isOwner: $("#create-input-user-isowner").is(":checked"),
+                    isAdmin: $("#create-input-user-isadmin").is(":checked"),
+                    Password: $("#create-input-user-password").val()
+                };
+                $.ajax({
+                    type: "POST",
+                    url: "/User/Create",
+                    data: JSON.stringify(user),
+                    contentType: "application/json",
+                    
+                    success: function (response) {
+                        window.location.href = "/User";
+                    },
+                    error: function (xhr, status, error) {
+                        console.log(xhr.responseText);
+                        alert("OOPS! Something went wrong!");
+                    }
+                });
+            });
+        });
+        function deleteItem(itemId) {
+            if (confirm('Are you sure you want to delete this item?')) {
+                $.ajax({
+                    url: '/User/Delete/' + itemId,
+                    type: 'DELETE',
+                    success: function (result) {
+                        window.location.href = '/User/Index';
+                    },
+                    error: function (xhr, status, error) {
+                        console.log(xhr.responseText);
+                    }
+                });
+            }
+        }
+    </script>
+}

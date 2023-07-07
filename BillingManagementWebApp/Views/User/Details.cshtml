@@ -1,0 +1,38 @@
+﻿@model BillingManagementWebApp.Models.ViewModels.UserViewModel
+@{
+    ViewData["Title"] = "Profile";
+    <style>
+        #fontfordetails {
+            font-size: 18px;
+        }
+    </style>
+}
+<div>
+    <h4>Profile</h4>
+    <hr />
+    <dl id="fontfordetails" class="row text-xl-start">
+        <dt class="col-sm-2">Name</dt>
+        <dd class="col-sm-10">@Html.DisplayFor(model => model.Name)</dd>
+        <dt class="col-sm-2">Surname</dt>
+        <dd class="col-sm-10">@Html.DisplayFor(model => model.Surname)</dd>
+        <dt class="col-sm-2">Email</dt>
+        <dd class="col-sm-10">@Html.DisplayFor(model => model.Email)</dd>
+        <dt class="col-sm-2">Phone Number</dt>
+        <dd class="col-sm-10">@Html.DisplayFor(model => model.PhoneNo)</dd>
+        <dt class="col-sm-2">TC Identity Number</dt>
+        <dd class="col-sm-10">@Html.DisplayFor(model => model.TCNo)</dd>
+        <dt class="col-sm-2">Plate</dt>
+        <dd class="col-sm-10">@Html.DisplayFor(model => model.Plate)</dd>
+        <dt class="col-sm-2">Owner</dt>
+        <dd class="col-sm-10">@Html.DisplayFor(model => model.isOwner)</dd>
+        <dt class="col-sm-2">Admin Authorization</dt>
+        <dd class="col-sm-10">@Html.DisplayFor(model => model.isAdmin)</dd>
+    </dl>
+</div>
+<div>
+    <a class="btn btn-primary" asp-action="Edit" asp-route-id="@Model?.Id">Edit</a>
+    @if (User.FindFirst(System.Security.Claims.ClaimTypes.Role).Value == "Admin")
+    {
+        <a class="btn btn-outline-secondary" asp-action="Index">Back to List</a>
+    }
+</div>

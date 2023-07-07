@@ -16,6 +16,10 @@ namespace BillingManagementWebApp.Repositories
         {
             return await _context.Flats.Include(x => x.User).OrderBy(x => x.Id).ToListAsync();
         }
+        public async Task<List<Flat>> GetAllForNonAdmin(string email)
+        {
+            return await _context.Flats.Include(x => x.User).Where(x=>x.User.Email==email).OrderBy(x => x.Id).ToListAsync();
+        }
         public async Task<Flat> GetById(int id)
         {
             return await _context.Flats.Include(x => x.User).SingleOrDefaultAsync(x => x.Id == id);

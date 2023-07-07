@@ -12,6 +12,7 @@ using BillingManagementWebApp.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using System.Net.Http.Headers;
 using System.IdentityModel.Tokens.Jwt;
+using BillingManagementWebApp.Services;
 
 namespace BillingManagementWebApp.Controllers
 {
@@ -19,10 +20,12 @@ namespace BillingManagementWebApp.Controllers
     public class LoginController:Controller
     {
         private readonly UserRepository _userRepository;
+        private readonly SmsLoggerService _smsLoggerService;
 
-        public LoginController(UserRepository userRepository)
+        public LoginController(UserRepository userRepository, SmsLoggerService smsLoggerService)
         {
             _userRepository = userRepository;
+            _smsLoggerService = smsLoggerService;
         }
 
         public IActionResult Index()
@@ -84,6 +87,24 @@ namespace BillingManagementWebApp.Controllers
                                                     .FirstOrDefault(c => c.Type == ClaimTypes.Email)
                                                         .Value);
             return user;
+        }
+        public IActionResult Reset()
+        {
+            return View();
+        }
+        [HttpPut]
+        public async Task<IActionResult>ResetPassword([FromBody]LoginViewModel credential)
+        { 
+            var user = await _userRepository.GetByCredentials(credential.Username);
+            if (user == null)
+            {
+                return BadRequest();
+            }
+            var newPassword =  Guid.NewGuid().ToString().Substring(0,8);
+            user.Password = newPassword;
+            await _userRepository.Update(user);
+            _smsLoggerService.Write("Here is your new password. You can change it anytime you log in. Password: " + newPassword);
+            return Ok();
         }
     }
 }

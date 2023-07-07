@@ -2,6 +2,12 @@
 @{
     ViewData["Title"] = "Login";
 }
+<br />
+<br />
+<h4>Login</h4>
+<br />
+<hr />
+<br />
 <div>
     <div id="input-div">
         Username: <input type="text" class="form-control" id="txtUsername" value="11111111111" />
@@ -9,6 +15,7 @@
         Password: <input type="text" class="form-control" id="txtPassword" value="admin123" />
         <br />
         <button type="button" id="btnLogin" class="btn btn-outline-success">Login</button>
+        <a  asp-action="Reset">Forgot Password?</a>
     </div>
 </div>
 @section Scripts {

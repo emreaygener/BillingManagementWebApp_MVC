@@ -10,5 +10,6 @@
         public int DoorNumber { get; set; }
         public int UserId { get; set; }
         public string User { get; set; }
+        public string UserTc { get; set; }
     }
 }

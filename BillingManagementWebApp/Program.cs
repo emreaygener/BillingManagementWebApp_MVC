@@ -45,6 +45,7 @@ builder.Services.AddScoped<DueRepository>();
 builder.Services.AddScoped<InvoiceRepository>();
 builder.Services.AddScoped<MessageRepository>();
 builder.Services.AddSingleton<ILoggerService, LoggerService>();
+builder.Services.AddSingleton<SmsLoggerService>();
 
 builder.Services.AddAutoMapper(Assembly.GetExecutingAssembly());
 
@@ -80,6 +81,7 @@ app.UseSession();
 //    }
 //    await next();
 //});
+//app.UseCustomAuthCheckMiddleware();
 
 app.UseCustomRequestHeaderMiddleware();
 

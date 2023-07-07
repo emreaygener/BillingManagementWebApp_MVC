@@ -1,0 +1,47 @@
+﻿@model BillingManagementWebApp.Models.ViewModels.LoginViewModel
+@{
+    ViewData["Title"] = "Reset Password";
+}
+<br />
+<br />
+<h4>Reset Password</h4>
+<br />
+<hr />
+<br />
+<div>
+    <div style="block-size:%50">
+        <div>
+            <div>
+                Please enter your email address, TC identity number or phone number to reset your password. 
+                <input id="input-forgot-pwd" type="text" class="border-info-subtle" placeholder ="example@example.com"/>
+                <button id="btn-forgot-pwd" class="btn btn-outline-info">Reset Password</button>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts{
+    <script>
+        $(document).ready(function () {
+            $("#btn-forgot-pwd").click(function () {
+                let login = {
+                    Username: $("#input-forgot-pwd").val(),
+                    Password: "132132"
+                };
+                console.log(login);
+                $.ajax({
+                    type: "PUT",
+                    url: "/Login/ResetPassword",
+                    data: JSON.stringify(login),
+                    contentType: "application/json",
+                    success: function (response) {
+                        window.location.href = "/Login/Index";
+                    },
+                    error: function (xhr, status, error) {
+                        console.log(xhr.responseText);
+                        alert("Invalid username or password!")
+                    }
+                });
+            });
+        });
+    </script>
+}

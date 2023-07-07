@@ -2,6 +2,7 @@
 using BillingManagementWebApp.Auth.Model;
 using BillingManagementWebApp.Data;
 using BillingManagementWebApp.Models;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 
 namespace BillingManagementWebApp.Repositories
@@ -23,6 +24,10 @@ namespace BillingManagementWebApp.Repositories
         {
             return await _context.Users.SingleOrDefaultAsync(x => x.Id == id);
         }
+        public async Task<User> GetByIdNoTracking(int id)
+        {
+            return await _context.Users.AsNoTracking().SingleOrDefaultAsync(x => x.Id == id);
+        }
         public async Task<User> GetByTc(long Tc)
         {
             return await _context.Users.SingleOrDefaultAsync(x => x.TCNo == Tc);
@@ -30,6 +35,21 @@ namespace BillingManagementWebApp.Repositories
         public async Task<User> GetByCredentials(string username, string password)
         {
             return await _context.Users.SingleOrDefaultAsync(x => (x.Email == username || x.PhoneNo == username || x.TCNo == Convert.ToInt64(username)) && x.Password == password);
+        }
+        public async Task<User> GetByCredentials(string username)
+        {
+            var fromEmail = await _context.Users.SingleOrDefaultAsync(x => x.Email == username);
+            if (fromEmail != null)
+            {
+                return fromEmail;
+            }
+            var fromPhone = await _context.Users.SingleOrDefaultAsync(x => x.PhoneNo == username);
+            if (fromPhone != null)
+            {
+                return fromPhone;
+            }
+            var fromTc = await _context.Users.SingleOrDefaultAsync(x => x.TCNo == Convert.ToInt64(username));
+            return fromTc;
         }
         public async Task<User> GetByEmail(string email)
         {

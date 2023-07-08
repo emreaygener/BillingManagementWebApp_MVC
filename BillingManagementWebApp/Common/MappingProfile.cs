@@ -14,12 +14,13 @@ namespace BillingManagementWebApp.Common
 
             CreateMap<Flat, FlatViewModel>().ForMember(dest => dest.User, opt => opt.MapFrom(src => src.User.Name + " " + src.User.Surname))
                                             .ForMember(dest=>dest.UserTc,opt=>opt.MapFrom(src=>src.User.TCNo));
-            CreateMap<FlatViewModel, Flat>()
-                .ForMember(dest => dest.UserId, opt => opt.Ignore())
-                .ForMember(dest=>dest.User,opt=>opt.Ignore());
+            CreateMap<FlatViewModel, Flat>().ForMember(dest => dest.UserId, opt => opt.Ignore())
+                                            .ForMember(dest=>dest.User,opt=>opt.Ignore());
 
-            CreateMap<Due, DueViewModel>().ForMember(dest => dest.User, opt => opt.MapFrom(src => src.User.Name + " " + src.User.Surname));
-            CreateMap<DueViewModel, Due>();
+            CreateMap<Due, DueViewModel>().ForMember(dest => dest.User, opt => opt.MapFrom(src => src.User.Name + " " + src.User.Surname))
+                                          .ForMember(dest => dest.UserTc, opt => opt.MapFrom(src => src.User.TCNo));
+            CreateMap<DueViewModel, Due>().ForMember(dest => dest.UserId, opt => opt.Ignore())
+                                          .ForMember(dest => dest.User, opt => opt.Ignore());
 
             CreateMap<Invoice, InvoiceViewModel>().ForMember(dest => dest.User, opt => opt.MapFrom(src => src.User.Name + " " + src.User.Surname)); ;
             CreateMap<InvoiceViewModel, Invoice>();

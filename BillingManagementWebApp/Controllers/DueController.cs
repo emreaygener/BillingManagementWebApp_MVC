@@ -4,6 +4,7 @@ using BillingManagementWebApp.Models.ViewModels;
 using BillingManagementWebApp.Repositories;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace BillingManagementWebApp.Controllers
 {
@@ -12,16 +13,28 @@ namespace BillingManagementWebApp.Controllers
     {
         private readonly DueRepository _dueRepository;
         private readonly IMapper _mapper;
-        public DueController(DueRepository dueRepository, IMapper mapper)
+        private readonly UserRepository _userRepository;
+        public DueController(DueRepository dueRepository, IMapper mapper, UserRepository userRepository)
         {
             _dueRepository = dueRepository;
             _mapper = mapper;
+            _userRepository = userRepository;
         }
         public async Task<IActionResult> Index()
         {
-            var dues = await _dueRepository.GetAll();
-            var dueVms = _mapper.Map<List<DueViewModel>>(dues);
-            return View(dueVms);
+            if (User.FindFirst(ClaimTypes.Role).Value != "Admin")
+            { 
+                var duesForNonAdmin = await _dueRepository.GetAllForNonAdmin(User.FindFirst(ClaimTypes.Email).Value);
+                var dueVmsForNonAdmin = _mapper.Map<List<DueViewModel>>(duesForNonAdmin);
+                return View(dueVmsForNonAdmin);
+            }
+            else
+            {
+                var dues = await _dueRepository.GetAll();
+                var dueVms = _mapper.Map<List<DueViewModel>>(dues);
+                return View(dueVms);
+
+            }
         }
         public async Task<IActionResult> Details(int? id)
         {
@@ -40,7 +53,7 @@ namespace BillingManagementWebApp.Controllers
         {
             return View();
         }
-
+        [HttpPost]
         public async Task<IActionResult> Create([FromBody] DueViewModel vm)
         {
             if (vm == null)
@@ -48,15 +61,18 @@ namespace BillingManagementWebApp.Controllers
             var due = _mapper.Map<Due>(vm);
             if (due == null)
                 throw new InvalidOperationException("cannot be mapped!");
+            var user = await _userRepository.GetByTc(Convert.ToInt64(vm.User));
+            due.User = user;
+            due.UserId = user.Id;
             await _dueRepository.Create(due);
-            return RedirectToAction("Index");
+            return Ok();
         }
 
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
                 throw new ArgumentNullException(nameof(id));
-            var due = _dueRepository.GetById(id.Value);
+            var due = await _dueRepository.GetById(id.Value);
             if (due == null)
                 throw new FileNotFoundException(nameof(due));
             var dueVm = _mapper.Map<DueViewModel>(due);
@@ -72,9 +88,12 @@ namespace BillingManagementWebApp.Controllers
             var due = _mapper.Map<Due>(vm);
             if (due == null)
                 throw new FileNotFoundException(nameof(due));
+            var user = await _userRepository.GetByTc(Convert.ToInt64(vm.UserTc));
+            due.User = user;
+            due.UserId = user.Id;
 
             await _dueRepository.Update(due);
-            return RedirectToAction("Index");
+            return Ok();
         }
         public async Task<IActionResult> Delete(int? id)
 
@@ -95,7 +114,7 @@ namespace BillingManagementWebApp.Controllers
             if (due == null)
                 throw new FileNotFoundException(nameof(due));
             await _dueRepository.Delete(due);
-            return RedirectToAction("Index");
+            return Ok();
         }
     }
 }

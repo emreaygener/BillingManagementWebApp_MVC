@@ -11,5 +11,6 @@ namespace BillingManagementWebApp.Models.ViewModels
 
         public int UserId { get; set; }
         public string User { get; set; }
+        public string UserTc { get; set; }
     }
 }

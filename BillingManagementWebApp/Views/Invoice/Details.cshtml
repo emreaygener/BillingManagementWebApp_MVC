@@ -1,24 +1,26 @@
-﻿@model BillingManagementWebApp.Models.ViewModels.DueViewModel
+﻿@model BillingManagementWebApp.Models.ViewModels.InvoiceViewModel
 @{
     ViewData["Title"] = "Details";
     <style>
-        #fontfordetailsofDues {
+        #fontfordetailsofInvoices {
             font-size: 18px;
         }
     </style>
 }
 <div>
-    <h4>Dues</h4>
+    <h4>Invoices</h4>
     <hr />
-    <dl id="fontfordetailsofDues" class="row text-xl-start">
+    <dl id="fontfordetailsofInvoices" class="row text-xl-start">
         <dt class="col-sm-2">Date Created</dt>
         <dd class="col-sm-10">@Html.DisplayFor(model => model.DateCreated)</dd>
         <dt class="col-sm-2">User</dt>
         <dd class="col-sm-10">@Html.DisplayFor(model => model.User)</dd>
         <dt class="col-sm-2">Cost</dt>
         <dd class="col-sm-10">@Html.DisplayFor(model => model.Cost)</dd>
-        <dt class="col-sm-2">Date Due Paid</dt>
-        <dd class="col-sm-10">@Html.DisplayFor(model => model.DateDuePaid)</dd>
+        <dt class="col-sm-2">Date Invoice Paid</dt>
+        <dd class="col-sm-10">@Html.DisplayFor(model => model.DateInvoicePaid)</dd>
+        <dt class="col-sm-2">Type</dt>
+        <dd class="col-sm-10">@Html.DisplayFor(model => model.Type)</dd>
     </dl>
 </div>
 <div>

@@ -12,9 +12,13 @@ namespace BillingManagementWebApp.Repositories
         {
             _context = context;
         }
-        public async Task<List<Message>> GetAll()
+        public async Task<List<Message>> GetAllReceived(string email)
         {
-            return await _context.Messages.Include(x => x.Sender).Include(x=>x.Receiver).OrderBy(x => x.Id).ToListAsync();
+            return await _context.Messages.Include(x => x.Sender).Include(x=>x.Receiver).Where(x=>x.Receiver.Email==email).OrderByDescending(x => x.DateSent).ToListAsync();
+        }
+        public async Task<List<Message>> GetAllSent(string email)
+        {
+            return await _context.Messages.Include(x => x.Sender).Include(x => x.Receiver).Where(x => x.Sender.Email == email).OrderByDescending(x => x.DateSent).ToListAsync();
         }
         public async Task<Message> GetById(int id)
         {

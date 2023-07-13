@@ -1,16 +1,16 @@
 ﻿@model IEnumerable<BillingManagementWebApp.Models.ViewModels.MessageViewModel>
 @{
-    ViewData["Title"] = "Inbox";
+    ViewData["Title"] = "Outbox";
 }
 <div>
-    <h1 class="text-center">Inbox</h1>
+    <h1 class="text-center">Outbox</h1>
     <br />
     <div>
-        <a asp-action="SentMessages">Go to Outbox</a>
+        <a asp-action="Index">Go to Inbox</a>
         <table id="tbl-users" class="table">
             <thead>
                 <tr>
-                    <th>@Html.DisplayNameFor(model => model.Sender)</th>
+                    <th>@Html.DisplayNameFor(model => model.Receiver)</th>
                     <th>@Html.DisplayNameFor(model => model.Header)</th>
                     <th>@Html.DisplayNameFor(model => model.Content)</th>
                     <th>@Html.DisplayNameFor(model => model.DateSent)</th>
@@ -22,7 +22,7 @@
                 {
                     <tr>
                         <td>
-                            @Html.DisplayFor(modelItem => item.Sender)
+                            @Html.DisplayFor(modelItem => item.Receiver)
                         </td>
                         <td>
                             @Html.DisplayFor(modelItem => item.Header)
@@ -74,7 +74,7 @@
                     contentType: "application/json",
 
                     success: function (response) {
-                        window.location.href = "/Message";
+                        window.location.href = "/Message/SentMessages";
                     },
                     error: function (xhr, status, error) {
                         console.log(xhr.responseText);
@@ -98,7 +98,7 @@
                     contentType: "application/json",
 
                     success: function (response) {
-                        window.location.href = "/Message";
+                        window.location.href = "/Message/SentMessages";
                     },
                     error: function (xhr, status, error) {
                         console.log(xhr.responseText);
@@ -113,7 +113,7 @@
                     url: '/Message/Delete/' + itemId,
                     type: 'DELETE',
                     success: function (result) {
-                        window.location.href = '/Message/Index';
+                        window.location.href = '/Message/SentMessages';
                     },
                     error: function (xhr, status, error) {
                         console.log(xhr.responseText);

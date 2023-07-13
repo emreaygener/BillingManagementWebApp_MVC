@@ -24,6 +24,10 @@ namespace BillingManagementWebApp.Repositories
         {
             return await _context.Dues.Include(x => x.User).SingleOrDefaultAsync(x => x.Id == id);
         }
+        public async Task<Due> GetByIdAsNoTracking(int id)
+        {
+            return await _context.Dues.AsNoTracking().Include(x => x.User).SingleOrDefaultAsync(x => x.Id == id);
+        }
         public async Task Create(Due due)
         {
             _context.Dues.Add(due);

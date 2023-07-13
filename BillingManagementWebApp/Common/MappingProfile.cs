@@ -22,13 +22,18 @@ namespace BillingManagementWebApp.Common
             CreateMap<DueViewModel, Due>().ForMember(dest => dest.UserId, opt => opt.Ignore())
                                           .ForMember(dest => dest.User, opt => opt.Ignore());
 
-            CreateMap<Invoice, InvoiceViewModel>().ForMember(dest => dest.User, opt => opt.MapFrom(src => src.User.Name + " " + src.User.Surname)); ;
-            CreateMap<InvoiceViewModel, Invoice>();
+            CreateMap<Invoice, InvoiceViewModel>().ForMember(dest => dest.User, opt => opt.MapFrom(src => src.User.Name + " " + src.User.Surname))
+                                                  .ForMember(dest => dest.UserTc, opt => opt.MapFrom(src => src.User.TCNo));
+            CreateMap<InvoiceViewModel, Invoice>().ForMember(dest => dest.UserId, opt => opt.Ignore())
+                                                  .ForMember(dest => dest.User, opt => opt.Ignore());
 
 
             CreateMap<Message, MessageViewModel>().ForMember(dest => dest.Sender, opt => opt.MapFrom(src => src.Sender.Name + " " + src.Sender.Surname))
                                                   .ForMember(dest => dest.Receiver, opt => opt.MapFrom(src => src.Receiver.Name + " " + src.Receiver.Surname));
-            CreateMap<MessageViewModel, Message>();
+            CreateMap<MessageViewModel, Message>().ForMember(dest => dest.SenderId, opt => opt.Ignore())
+                                                  .ForMember(dest => dest.Sender, opt => opt.Ignore())
+                                                  .ForMember(dest => dest.ReceiverId, opt => opt.Ignore())
+                                                  .ForMember(dest => dest.Receiver, opt => opt.Ignore());
         }
     }
 

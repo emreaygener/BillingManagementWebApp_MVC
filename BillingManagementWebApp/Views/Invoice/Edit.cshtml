@@ -1,0 +1,78 @@
+﻿@model BillingManagementWebApp.Models.ViewModels.InvoiceViewModel
+@{
+    ViewData["Title"] = "Edit";
+    <style>
+        #fontforeditinvoice {
+            font-size: 18px;
+        }
+    </style>
+}
+
+<div>
+    <h4>Edit</h4>
+    <hr />
+    <form>
+        <dl id="fontforeditinvoice" class="row text-xl-start">
+            <dt class="col-sm-2">User Tc No</dt>
+            <dd class="col-sm-10"><input type="text" id="input-invoice-username" required value="@Html.DisplayFor(model => model.UserTc)" /></dd>
+            <dt class="col-sm-2">Cost</dt>
+            <dd class="col-sm-10"><input type="text" id="input-invoice-cost" required value="@Html.DisplayFor(model => model.Cost)" /></dd>
+            <dt class="col-sm-2">Date Invoice Paid:</dt>
+            <dd class="col-sm-10"><input type="datetime-local" id="input-invoices-dateinvoicepaid" required /></dd>
+            <dt class="col-sm-2">Type:</dt>
+            <dd class="col-sm-10">
+                <select id="input-invoices-Type" required>
+                    <option value="Electricity">Electricity</option>
+                    <option value="Gas">Gas</option>
+                    <option value="Water">Water</option>
+                </select>
+            </dd>
+        </dl>
+    </form>
+</div>
+
+<div>
+    <button id="btn-invoice-edit" class="btn btn-primary">Save</button>
+
+    <a class="btn btn-outline-secondary" asp-action="Details" asp-route-id="@Model?.Id">Back to Profile</a>
+</div>
+@{
+    var modelId = @Model.Id; // Render the value of Model.Id into a JavaScript variable
+}
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $("#btn-invoice-edit").click(function () {
+                if ($("#input-invoice-password").val() !== $("#input-invoice-repeated-password").val()) {
+                    alert("Entered passwords don't match!");
+                    window.location.href = "/Invoice/Edit/@Model.Id";
+                }
+                let invoice = {
+                    Id: "@Model.Id",
+                    User: $("#input-invoice-username").val(),
+                    DataCreated: "@Model.DateCreated"[0].value,
+                    Cost: $("#input-invoice-cost").val(),
+                    DateInvoicePaid: $("#input-invoices-dateinvoicepaid")[0].value,
+                    UserTc: $("#input-invoice-username").val(),
+                    Type: $("#input-invoices-Type").val()
+                };
+
+                $.ajax({
+                    type: "PUT",
+                    url: "/Invoice/Edit/@Model.Id",
+                    data: JSON.stringify(invoice),
+                    contentType: "application/json",
+
+                    success: function (response) {
+                        window.location.href = "/Invoice/Details/@Model.Id";
+                    },
+                    error: function (xhr, status, error) {
+                        console.log(xhr.responseText);
+                        console.log(invoice);
+                        alert("OOPS! Something went wrong!");
+                    }
+                });
+            });
+        });
+    </script>
+}

@@ -9,7 +9,7 @@ namespace BillingManagementWebApp.Models
         public string Type { get; set; }
         public DateTime DateCreated { get; set; }
         public double Cost { get; set; }
-        public DateTime DateInvoicePaid { get; set; }
+        public DateTime? DateInvoicePaid { get; set; }
 
         [ForeignKey("User")]
         public int UserId { get; set; }

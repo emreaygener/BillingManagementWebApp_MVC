@@ -1,9 +1,9 @@
 ﻿@model IEnumerable<BillingManagementWebApp.Models.ViewModels.InvoiceViewModel>
 @{
-    ViewData["Title"] = "User Page";
+    ViewData["Title"] = "Invoice Page";
 }
 <div>
-    <h1 class="text-center">User Info</h1>
+    <h1 class="text-center">Invoices</h1>
     <br />
     <div>
         <table id="tbl-users" class="table">
@@ -34,14 +34,110 @@
                         </td>
                         <td>
                             <div>
-                                <a class="btn btn-outline-warning" asp-action="Edit" asp-route-id="@item.Id"><i class="bi bi-pencil-square"></i>Edit</a> |
-                                <a class="btn btn-outline-info" asp-action="Details" asp-route-id="@item.Id"><i class="bi bi-eye"></i>Details</a> |
-                                <a class="btn btn-outline-danger" asp-action="Delete" asp-route-id="@item.Id"><i class="bi bi-trash"></i>Delete</a>
+                                <a class="btn btn-outline-info" asp-action="Details" asp-route-id="@item.Id"><i class="bi bi-eye"></i>Details</a> 
+                                @if (User.FindFirst(System.Security.Claims.ClaimTypes.Role).Value == "Admin")
+                                {
+                                    <a class="btn btn-outline-danger" onclick="deleteItem('@item.Id')"><i class="bi bi-trash"></i>Delete</a>
+                                }
                             </div>
                         </td>
                     </tr>
                 }
             </tbody>
         </table>
+        @if (User.FindFirst(System.Security.Claims.ClaimTypes.Role).Value == "Admin")
+        {
+            <form>
+                <dl class="row text-xl-start">
+                <dt class="col-sm-2">User TC: (Only required when assigning individually)</dt>
+                <dd class="col-sm-10"><input type="text" id="create-input-invoices-user" value="19631260424" required /></dd>
+                <dt class="col-sm-2">Date Created:</dt>
+                <dd class="col-sm-10"><input type="datetime-local" id="create-input-invoices-datecreated" required /></dd>
+                <dt class="col-sm-2">Cost:</dt>
+                <dd class="col-sm-10"><input type="text" id="create-input-invoices-Cost" value="300" required /></dd>
+                <dt class="col-sm-2">Type:</dt>
+                <dd class="col-sm-10">
+                    <select id="create-input-invoices-Type" required>
+                        <option value="Electricity">Electricity</option>
+                        <option value="Gas">Gas</option>
+                        <option value="Water">Water</option>
+                    </select>
+                </dd>
+
+                </dl>
+                <button id="btn-create-invoices" class="btn btn-success">Create New Invoice</button>
+                <button id="btn-create-invoices-for-all" class="btn btn-success">New Invoices For Everyone!</button>
+            </form>
+        }
     </div>
 </div>
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $("#btn-create-invoices").click(function () {
+                invoices = {
+                    User: $("#create-input-invoices-user").val(),
+                    DateCreated: $("#create-input-invoices-datecreated")[0].value,
+                    Cost: $("#create-input-invoices-Cost").val(),
+                    UserTc: $("#create-input-invoices-user").val(),
+                    Type: $("#create-input-invoices-Type").val()
+                };
+
+                $.ajax({
+                    type: "POST",
+                    url: "/Invoice/Create",
+                    data: JSON.stringify(invoices),
+                    contentType: "application/json",
+
+                    success: function (response) {
+                        window.location.href = "/Invoice";
+                    },
+                    error: function (xhr, status, error) {
+                        console.log(xhr.responseText);
+                        alert("OOPS! Something went wrong!");
+                    }
+                });
+            });
+        });
+        $(document).ready(function () {
+            $("#btn-create-invoices-for-all").click(function () {
+                invoices = {
+                    User: $("#create-input-invoices-user").val(),
+                    DateCreated: $("#create-input-invoices-datecreated")[0].value,
+                    Cost: $("#create-input-invoices-Cost").val(),
+                    UserTc: $("#create-input-invoices-user").val(),
+                    Type: $("#create-input-invoices-Type").val()
+                };
+
+                $.ajax({
+                    type: "POST",
+                    url: "/Invoice/CreateInvoiceForAllUsers",
+                    data: JSON.stringify(invoices),
+                    contentType: "application/json",
+
+                    success: function (response) {
+                        window.location.href = "/Invoice";
+                    },
+                    error: function (xhr, status, error) {
+                        console.log(xhr.responseText);
+                        alert("OOPS! Something went wrong!");
+                    }
+                });
+            });
+        });
+        function deleteItem(itemId) {
+            if (confirm('Are you sure you want to delete this item?')) {
+                $.ajax({
+                    url: '/Invoice/Delete/' + itemId,
+                    type: 'DELETE',
+                    success: function (result) {
+                        window.location.href = '/Invoice/Index';
+                    },
+                    error: function (xhr, status, error) {
+                        console.log(xhr.responseText);
+                    }
+                });
+            }
+        }
+    </script>
+}

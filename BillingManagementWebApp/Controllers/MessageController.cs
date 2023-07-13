@@ -4,6 +4,7 @@ using BillingManagementWebApp.Models.ViewModels;
 using BillingManagementWebApp.Repositories;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace BillingManagementWebApp.Controllers
 {
@@ -12,35 +13,24 @@ namespace BillingManagementWebApp.Controllers
     {
         private readonly MessageRepository _messageRepository;
         private readonly IMapper _mapper;
-        public MessageController(MessageRepository messageRepository, IMapper mapper)
+        private readonly UserRepository _userRepository;
+        public MessageController(MessageRepository messageRepository, IMapper mapper, UserRepository userRepository)
         {
             _messageRepository = messageRepository;
             _mapper = mapper;
+            _userRepository = userRepository;
         }
         public async Task<IActionResult> Index()
         {
-            var messages = await _messageRepository.GetAll();
+            var messages = await _messageRepository.GetAllReceived(User.FindFirst(ClaimTypes.Email).Value);
             var messageVms = _mapper.Map<List<MessageViewModel>>(messages);
             return View(messageVms);
-        }
-        public async Task<IActionResult> Details(int? id)
-        {
-            try
-            {
-                var message = await _messageRepository.GetById(id.Value);
-                var messageVm = _mapper.Map<MessageViewModel>(message);
-                return View(messageVm);
-            }
-            catch
-            {
-                throw new Exception();
-            }
         }
         public IActionResult Create()
         {
             return View();
         }
-
+        [HttpPost]
         public async Task<IActionResult> Create([FromBody] MessageViewModel vm)
         {
             if (vm == null)
@@ -48,40 +38,24 @@ namespace BillingManagementWebApp.Controllers
             var message = _mapper.Map<Message>(vm);
             if (message == null)
                 throw new InvalidOperationException("cannot be mapped!");
+            var sender = await _userRepository.GetByEmail(User.FindFirst(ClaimTypes.Email).Value);
+            var receiver = await _userRepository.GetByCredentials(vm.ReceiverUsername);
+            if (sender == null || receiver == null)
+                throw new FileNotFoundException(nameof(sender), nameof(receiver));
+            message.SenderId = sender.Id;
+            message.ReceiverId = receiver.Id;
+            message.Sender = sender;
+            message.Receiver = receiver;
+            message.DateSent = DateTime.Now;
             await _messageRepository.Create(message);
-            return RedirectToAction("Index");
-        }
-
-        public async Task<IActionResult> Edit(int? id)
-        {
-            if (id == null)
-                throw new ArgumentNullException(nameof(id));
-            var message = _messageRepository.GetById(id.Value);
-            if (message == null)
-                throw new FileNotFoundException(nameof(message));
-            var messageVm = _mapper.Map<MessageViewModel>(message);
-            if (messageVm == null)
-                throw new InvalidOperationException("cannot be mapped!");
-            return View(messageVm);
-        }
-        [HttpPut]
-        public async Task<IActionResult> Edit(int? id, [FromBody] MessageViewModel vm)
-        {
-            if (id == null || vm == null)
-                throw new ArgumentNullException(nameof(id), nameof(vm));
-            var message = _mapper.Map<Message>(vm);
-            if (message == null)
-                throw new FileNotFoundException(nameof(message));
-
-            await _messageRepository.Update(message);
-            return RedirectToAction("Index");
+            return Ok();
         }
         public async Task<IActionResult> Delete(int? id)
 
         {
             if (id == null)
                 throw new ArgumentNullException(nameof(id));
-            var message = _messageRepository.GetById(id.Value);
+            var message = await _messageRepository.GetById(id.Value);
             if (message == null)
                 throw new FileNotFoundException(nameof(message));
             return View(_mapper.Map<MessageViewModel>(message));
@@ -95,7 +69,31 @@ namespace BillingManagementWebApp.Controllers
             if (message == null)
                 throw new FileNotFoundException(nameof(message));
             await _messageRepository.Delete(message);
-            return RedirectToAction("Index");
+            return Ok();
+        }
+        [HttpPost,ActionName("SendMessageToAllUsers")]
+        public async Task<IActionResult> SendMessageToAllUsers([FromBody] MessageViewModel vm)
+        {
+            var users = await _userRepository.GetAll();
+            foreach (var user in users)
+            {
+                var message = new Message();
+                message.SenderId = (await _userRepository.GetByEmail(User.FindFirst(ClaimTypes.Email).Value)).Id;
+                message.DateSent = DateTime.Now;
+                message.Sender = await _userRepository.GetByEmail(User.FindFirst(ClaimTypes.Email).Value);
+                message.Header = vm.Header;
+                message.Content = vm.Content;
+                message.ReceiverId = user.Id;
+                message.Receiver = user;
+                await _messageRepository.Create(message);
+            }
+            return Ok();
+        }
+        public async Task<IActionResult> SentMessages()
+        {
+            var messages = await _messageRepository.GetAllSent(User.FindFirst(ClaimTypes.Email).Value);
+            var messageVms = _mapper.Map<List<MessageViewModel>>(messages);
+            return View(messageVms);
         }
     }
 }

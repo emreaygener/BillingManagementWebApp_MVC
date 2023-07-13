@@ -34,35 +34,41 @@
                         </td>
                         <td>
                             <div>
-                                <a class="btn btn-outline-info" asp-action="Details" asp-route-id="@item.Id"><i class="bi bi-eye"></i>Details</a> |
-                                <a class="btn btn-outline-danger" asp-action="Delete" asp-route-id="@item.Id" onclick="deleteItem('@item.Id')">
-                                    <i class="bi bi-trash"></i>Delete
-                                </a>
+                                <a class="btn btn-outline-info" asp-action="Details" asp-route-id="@item.Id"><i class="bi bi-eye"></i>Details</a> 
+                                @if (User.FindFirst(System.Security.Claims.ClaimTypes.Role).Value == "Admin")
+                                {
+                                    <a class="btn btn-outline-danger" asp-action="Delete" asp-route-id="@item.Id" onclick="deleteItem('@item.Id')">
+                                        <i class="bi bi-trash"></i>Delete
+                                    </a>
+                                }
                             </div>
                         </td>
                     </tr>
                 }
             </tbody>
         </table>
-        <dl class="row text-xl-start">
-            <dt class="col-sm-2">Name:</dt>
-            <dd class="col-sm-10"><input type="text" id="create-input-user-name" required value="Emre" /></dd>
-            <dt class="col-sm-2">Surname:</dt>
-            <dd class="col-sm-10"><input type="text" id="create-input-user-surname" required value="Aygener" /></dd>
-            <dt class="col-sm-2">Email:</dt>
-            <dd class="col-sm-10"><input type="text" id="create-input-user-email" required value="emre.aygener@gmail.com" /></dd>
-            <dt class="col-sm-2">PhoneNo:</dt>
-            <dd class="col-sm-10"><input type="text" id="create-input-user-phoneno" required value="+905364001010" /></dd>
-            <dt class="col-sm-2">TCNo:</dt>
-            <dd class="col-sm-10"><input type="text" id="create-input-user-tcno" required value="12312312312" /></dd>
-            <dt class="col-sm-2">Plate:</dt>
-            <dd class="col-sm-10"><input type="text" id="create-input-user-plate" required value="34au3418" /></dd>
-            <dt class="col-sm-2">isOwner:</dt>
-            <dd class="col-sm-10"><input type="checkbox" id="create-input-user-isowner"/></dd>
-            <dt class="col-sm-2">isAdmin:</dt>
-            <dd class="col-sm-10"><input type="checkbox" id="create-input-user-isadmin"/></dd>
-        </dl>
-        <button id="btn-create-user"class="btn btn-success">Create New User</button>
+        @if (User.FindFirst(System.Security.Claims.ClaimTypes.Role).Value == "Admin")
+        {
+            <dl class="row text-xl-start">
+                <dt class="col-sm-2">Name:</dt>
+                <dd class="col-sm-10"><input type="text" id="create-input-user-name" required value="Emre" /></dd>
+                <dt class="col-sm-2">Surname:</dt>
+                <dd class="col-sm-10"><input type="text" id="create-input-user-surname" required value="Aygener" /></dd>
+                <dt class="col-sm-2">Email:</dt>
+                <dd class="col-sm-10"><input type="text" id="create-input-user-email" required value="emre.aygener@gmail.com" /></dd>
+                <dt class="col-sm-2">PhoneNo:</dt>
+                <dd class="col-sm-10"><input type="text" id="create-input-user-phoneno" required value="+905364001010" /></dd>
+                <dt class="col-sm-2">TCNo:</dt>
+                <dd class="col-sm-10"><input type="text" id="create-input-user-tcno" required value="12312312312" /></dd>
+                <dt class="col-sm-2">Plate:</dt>
+                <dd class="col-sm-10"><input type="text" id="create-input-user-plate" required value="34au3418" /></dd>
+                <dt class="col-sm-2">isOwner:</dt>
+                <dd class="col-sm-10"><input type="checkbox" id="create-input-user-isowner"/></dd>
+                <dt class="col-sm-2">isAdmin:</dt>
+                <dd class="col-sm-10"><input type="checkbox" id="create-input-user-isadmin"/></dd>
+            </dl>
+            <button id="btn-create-user"class="btn btn-success">Create New User</button>
+        }
     </div>
 </div>
 @section Scripts {

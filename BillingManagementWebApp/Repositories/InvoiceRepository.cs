@@ -16,9 +16,17 @@ namespace BillingManagementWebApp.Repositories
         {
             return await _context.Invoices.Include(x => x.User).OrderBy(x => x.Id).ToListAsync();
         }
+        public async Task<List<Invoice>> GetAllForNonAdmin(string email)
+        {
+            return await _context.Invoices.Include(x => x.User).Where(x => x.User.Email == email).OrderBy(x => x.Id).ToListAsync();
+        }
         public async Task<Invoice> GetById(int id)
         {
             return await _context.Invoices.Include(x => x.User).SingleOrDefaultAsync(x => x.Id == id);
+        }
+        public async Task<Invoice> GetByIdAsNoTracking(int id)
+        {
+            return await _context.Invoices.AsNoTracking().Include(x => x.User).SingleOrDefaultAsync(x => x.Id == id);
         }
         public async Task Create(Invoice invoice)
         {

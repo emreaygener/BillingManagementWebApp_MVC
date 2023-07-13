@@ -3,7 +3,7 @@
     ViewData["Title"] = "Due Page";
 }
 <div>
-    <h1 class="text-center">Due Info</h1>
+    <h1 class="text-center">Dues</h1>
     <br />
     <div>
         <table id="tbl-dues" class="table">
@@ -34,25 +34,32 @@
                         </td>
                         <td>
                             <div>
-                                <a class="btn btn-outline-info" asp-action="Details" asp-route-id="@item.Id"><i class="bi bi-eye"></i>Details</a> |
-                                <a class="btn btn-outline-danger" asp-action="Delete" asp-route-id="@item.Id" onclick="deleteItem('@item.Id')"><i class="bi bi-trash"></i>Delete</a>
+                                <a class="btn btn-outline-info" asp-action="Details" asp-route-id="@item.Id"><i class="bi bi-eye"></i>Details</a> 
+                                @if (User.FindFirst(System.Security.Claims.ClaimTypes.Role).Value == "Admin")
+                                {
+                                    <a class="btn btn-outline-danger" onclick="deleteItem('@item.Id')"><i class="bi bi-trash"></i>Delete</a>
+                                }
                             </div>
                         </td>
                     </tr>
                 }
             </tbody>
         </table>
-        <form>
-            <dl class="row text-xl-start">
-                <dt class="col-sm-2">User TC:</dt>
+        @if (User.FindFirst(System.Security.Claims.ClaimTypes.Role).Value == "Admin")
+        {
+            <form>
+                <dl class="row text-xl-start">
+                <dt class="col-sm-2">User TC: (Only required when assigning individually)</dt>
                 <dd class="col-sm-10"><input type="text" id="create-input-dues-user" value="19631260424" required /></dd>
                 <dt class="col-sm-2">Date Created:</dt>
                 <dd class="col-sm-10"><input type="datetime-local" id="create-input-dues-datecreated" required /></dd>
                 <dt class="col-sm-2">Cost:</dt>
                 <dd class="col-sm-10"><input type="text" id="create-input-dues-Cost" value="300" required /></dd>
-            </dl>
-            <button id="btn-create-dues" class="btn btn-success">Create New Due</button>
-        </form>
+                </dl>
+                <button id="btn-create-dues" class="btn btn-success">Create New Due</button>
+                <button id="btn-create-dues-for-all" class="btn btn-success">New Dues For Everyone!</button>
+            </form>
+        }
     </div>
 </div>
 @section Scripts {
@@ -69,6 +76,31 @@
                 $.ajax({
                     type: "POST",
                     url: "/Due/Create",
+                    data: JSON.stringify(dues),
+                    contentType: "application/json",
+
+                    success: function (response) {
+                        window.location.href = "/Due";
+                    },
+                    error: function (xhr, status, error) {
+                        console.log(xhr.responseText);
+                        alert("OOPS! Something went wrong!");
+                    }
+                });
+            });
+        });
+        $(document).ready(function () {
+            $("#btn-create-dues-for-all").click(function () {
+                dues = {
+                    User: $("#create-input-dues-user").val(),
+                    DateCreated: $("#create-input-dues-datecreated")[0].value,
+                    Cost: $("#create-input-dues-Cost").val(),
+                    UserTc: $("#create-input-dues-user").val()
+                };
+
+                $.ajax({
+                    type: "POST",
+                    url: "/Due/CreateDueForAllUsers",
                     data: JSON.stringify(dues),
                     contentType: "application/json",
 

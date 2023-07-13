@@ -85,6 +85,10 @@ namespace BillingManagementWebApp.Controllers
         {
             if (id == null || vm == null)
                 throw new ArgumentNullException(nameof(id), nameof(vm));
+            if(vm.DateCreated == null)
+            {
+                vm.DateCreated = _dueRepository.GetByIdAsNoTracking(id.Value).Result.DateCreated;
+            }
             var due = _mapper.Map<Due>(vm);
             if (due == null)
                 throw new FileNotFoundException(nameof(due));
@@ -100,7 +104,7 @@ namespace BillingManagementWebApp.Controllers
         {
             if (id == null)
                 throw new ArgumentNullException(nameof(id));
-            var due = _dueRepository.GetById(id.Value);
+            var due = await _dueRepository.GetById(id.Value);
             if (due == null)
                 throw new FileNotFoundException(nameof(due));
             return View(_mapper.Map<DueViewModel>(due));
@@ -114,6 +118,23 @@ namespace BillingManagementWebApp.Controllers
             if (due == null)
                 throw new FileNotFoundException(nameof(due));
             await _dueRepository.Delete(due);
+            return Ok();
+        }
+        [HttpPost,ActionName("CreateDueForAllUsers")]
+        public async Task<IActionResult> CreateDueForAllUsers([FromBody] DueViewModel vm)
+        {
+            if (vm == null)
+                throw new ArgumentNullException(nameof(vm));
+            var users = await _userRepository.GetAll();
+            foreach (var user in users)
+            {
+                var due = _mapper.Map<Due>(vm);
+                if (due == null)
+                    throw new InvalidOperationException("cannot be mapped!");
+                due.User = user;
+                due.UserId = user.Id;
+                await _dueRepository.Create(due);
+            }
             return Ok();
         }
     }

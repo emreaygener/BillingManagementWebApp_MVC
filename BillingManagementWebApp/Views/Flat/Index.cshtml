@@ -34,31 +34,37 @@
                         </td>
                         <td>
                             <div>
-                                <a class="btn btn-outline-info" asp-action="Details" asp-route-id="@item.Id"><i class="bi bi-eye"></i>Details</a> |
-                                <a class="btn btn-outline-danger" asp-action="Delete" asp-route-id="@item.Id" onclick="deleteItem('@item.Id')">
-                                    <i class="bi bi-trash"></i>Delete
-                                </a>
+                                <a class="btn btn-outline-info" asp-action="Details" asp-route-id="@item.Id"><i class="bi bi-eye"></i>Details</a> 
+                                @if (User.FindFirst(System.Security.Claims.ClaimTypes.Role).Value == "Admin")
+                                {
+                                    <a class="btn btn-outline-danger" asp-action="Delete" asp-route-id="@item.Id" onclick="deleteItem('@item.Id')">
+                                        <i class="bi bi-trash"></i>Delete
+                                    </a>
+                                }
                             </div>
                         </td>
                     </tr>
                 }
             </tbody>
         </table>
-        <dl class="row text-xl-start">
-            <dt class="col-sm-2">User TC:</dt>
-            <dd class="col-sm-10"><input type="text" id="create-input-flats-user" required value="19631260424" /></dd>
-            <dt class="col-sm-2">Block Name:</dt>
-            <dd class="col-sm-10"><input type="text" id="create-input-flats-blockname" required value="A" /></dd>
-            <dt class="col-sm-2">Type:</dt>
-            <dd class="col-sm-10"><input type="text" id="create-input-flats-type" required value="3+1" /></dd>
-            <dt class="col-sm-2">Floor Number:</dt>
-            <dd class="col-sm-10"><input type="text" id="create-input-flats-floorno" required value="0" /></dd>
-            <dt class="col-sm-2">Door Number:</dt>
-            <dd class="col-sm-10"><input type="text" id="create-input-flats-doornumber" required value="2" /></dd>
-            <dt class="col-sm-2">isEmpthy:</dt>
-            <dd class="col-sm-10"><input type="checkbox" id="create-input-flats-isEmpthy" /></dd>
-        </dl>
-        <button id="btn-create-flats" class="btn btn-success">Create New Flat</button>
+        @if (User.FindFirst(System.Security.Claims.ClaimTypes.Role).Value == "Admin")
+        {
+            <dl class="row text-xl-start">
+                <dt class="col-sm-2">User TC:</dt>
+                <dd class="col-sm-10"><input type="text" id="create-input-flats-user" required value="19631260424" /></dd>
+                <dt class="col-sm-2">Block Name:</dt>
+                <dd class="col-sm-10"><input type="text" id="create-input-flats-blockname" required value="A" /></dd>
+                <dt class="col-sm-2">Type:</dt>
+                <dd class="col-sm-10"><input type="text" id="create-input-flats-type" required value="3+1" /></dd>
+                <dt class="col-sm-2">Floor Number:</dt>
+                <dd class="col-sm-10"><input type="text" id="create-input-flats-floorno" required value="0" /></dd>
+                <dt class="col-sm-2">Door Number:</dt>
+                <dd class="col-sm-10"><input type="text" id="create-input-flats-doornumber" required value="2" /></dd>
+                <dt class="col-sm-2">isEmpthy:</dt>
+                <dd class="col-sm-10"><input type="checkbox" id="create-input-flats-isEmpthy" /></dd>
+            </dl>
+            <button id="btn-create-flats" class="btn btn-success">Create New Flat</button>
+        }
     </div>
 </div>
 @section Scripts {

@@ -137,5 +137,32 @@ namespace BillingManagementWebApp.Controllers
             }
             return Ok();
         }
+        public async Task<IActionResult> Payment(int? id)
+        {
+            var due = await _dueRepository.GetById(id.Value);
+            return View(new CardViewModel { AmountOfPayment = due.Cost, PaymentId = due.Id });
+        }
+        [HttpPut]
+        public async Task<IActionResult> Pay([FromBody] CardViewModel card)
+        {
+            var cardDto = _mapper.Map<CardDto>(card);
+            using (var client = new HttpClient())
+            {
+                var due = await _dueRepository.GetById(card.PaymentId);
+                client.BaseAddress = new Uri("https://localhost:5011/api/");
+                var response = await client.PutAsJsonAsync("Cards/Payment", cardDto);
+                if (response.IsSuccessStatusCode)
+                {
+                    due.DateDuePaid = DateTime.Now;
+                    await _dueRepository.Update(due);
+
+                    return Ok(response.Content);
+                }
+                else
+                {
+                    return BadRequest();
+                }
+            }
+        }
     }
 }

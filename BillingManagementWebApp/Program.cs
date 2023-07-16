@@ -49,6 +49,8 @@ builder.Services.AddSingleton<SmsLoggerService>();
 
 builder.Services.AddAutoMapper(Assembly.GetExecutingAssembly());
 
+builder.WebHost.UseUrls("https://localhost:7047");
+
 var app = builder.Build();
 
 using (var scope = app.Services.CreateScope())
@@ -81,7 +83,7 @@ app.UseSession();
 //    }
 //    await next();
 //});
-//app.UseCustomAuthCheckMiddleware();
+app.UseCustomAuthCheckMiddleware();
 
 app.UseCustomRequestHeaderMiddleware();
 

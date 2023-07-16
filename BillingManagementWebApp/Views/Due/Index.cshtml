@@ -34,7 +34,11 @@
                         </td>
                         <td>
                             <div>
-                                <a class="btn btn-outline-info" asp-action="Details" asp-route-id="@item.Id"><i class="bi bi-eye"></i>Details</a> 
+                                <a class="btn btn-outline-info" asp-action="Details" asp-route-id="@item.Id"><i class="bi bi-eye"></i>Details</a>
+                                @if (item.DateDuePaid is null)
+                                {
+                                    <a class="btn btn-outline-success" asp-action="Payment" asp-route-id="@item.Id"><i class="bi bi-money"></i>Pay</a>
+                                }
                                 @if (User.FindFirst(System.Security.Claims.ClaimTypes.Role).Value == "Admin")
                                 {
                                     <a class="btn btn-outline-danger" onclick="deleteItem('@item.Id')"><i class="bi bi-trash"></i>Delete</a>

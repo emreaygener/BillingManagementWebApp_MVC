@@ -17,8 +17,6 @@
             <dd class="col-sm-10"><input type="text" id="input-invoice-username" required value="@Html.DisplayFor(model => model.UserTc)" /></dd>
             <dt class="col-sm-2">Cost</dt>
             <dd class="col-sm-10"><input type="text" id="input-invoice-cost" required value="@Html.DisplayFor(model => model.Cost)" /></dd>
-            <dt class="col-sm-2">Date Invoice Paid:</dt>
-            <dd class="col-sm-10"><input type="datetime-local" id="input-invoices-dateinvoicepaid" required /></dd>
             <dt class="col-sm-2">Type:</dt>
             <dd class="col-sm-10">
                 <select id="input-invoices-Type" required>
@@ -52,7 +50,7 @@
                     User: $("#input-invoice-username").val(),
                     DataCreated: "@Model.DateCreated"[0].value,
                     Cost: $("#input-invoice-cost").val(),
-                    DateInvoicePaid: $("#input-invoices-dateinvoicepaid")[0].value,
+                    DateInvoicePaid: "@Model.DateInvoicePaid",
                     UserTc: $("#input-invoice-username").val(),
                     Type: $("#input-invoices-Type").val()
                 };

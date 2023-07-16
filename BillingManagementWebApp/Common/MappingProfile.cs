@@ -34,6 +34,8 @@ namespace BillingManagementWebApp.Common
                                                   .ForMember(dest => dest.Sender, opt => opt.Ignore())
                                                   .ForMember(dest => dest.ReceiverId, opt => opt.Ignore())
                                                   .ForMember(dest => dest.Receiver, opt => opt.Ignore());
+
+            CreateMap<CardDto,CardViewModel>().ReverseMap();
         }
     }
 
